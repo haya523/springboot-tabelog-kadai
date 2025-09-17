@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <div th:replace="~{fragment :: meta}"></div>
+  <div th:replace="~{fragment :: styles}"></div>
+  <title>NAGOYAMESHI - ホーム</title>
+</head>
+<body>
+<div class="samuraitravel-wrapper">
+  <!-- ヘッダー -->
+  <div th:replace="~{fragment :: header}"></div>
+
+  <main>
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+      <!-- 提供いただいた cover.jpg を利用 -->
+      <div class="hero-bg" style="background-image: url('/images/cover.jpg');"></div>
+      <div class="hero-mask">
+        <div class="container text-center text-white py-5">
+          <h1 class="display-6 fw-bold mb-3">名古屋ならではの味を、見つけよう</h1>
+          <p class="lead mb-4">NAGOYAMESHIは、名古屋の飲食店を検索・予約・レビューできるサービスです。</p>
+
+          <!-- キーワード検索（一覧へGET） -->
+          <form class="d-flex justify-content-center" th:action="@{/houses}" method="get">
+            <input class="form-control samuraitravel-search-form me-2" type="text" name="keyword" placeholder="店舗名・エリア・キーワード">
+            <button type="submit" class="btn samuraitravel-btn text-white">検索</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== カテゴリから探す ===== -->
+    <!-- Category エンティティは使わず、data.sql の固定IDに合わせてリンクだけ出します -->
+    <section class="py-5 bg-light">
+      <div class="container">
+        <h2 class="mb-3">カテゴリから探す</h2>
+
+        <div class="row g-3">
+          <!-- ひつまぶし -->
+          <div class="col-6 col-md-4 col-lg-3">
+            <a th:href="@{/houses(categoryId=1)}" class="category-card">
+              <img src="/images/don.jpg" alt="ひつまぶし">
+              <span>ひつまぶし</span>
+            </a>
+          </div>
+          <!-- 味噌カツ -->
+          <div class="col-6 col-md-4 col-lg-3">
+            <a th:href="@{/houses(categoryId=2)}" class="category-card">
+              <img src="/images/fried.jpg" alt="味噌カツ">
+              <span>味噌カツ</span>
+            </a>
+          </div>
+          <!-- 味噌煮込みうどん -->
+          <div class="col-6 col-md-4 col-lg-3">
+            <a th:href="@{/houses(categoryId=3)}" class="category-card">
+              <img src="/images/udon.jpg" alt="味噌煮込みうどん">
+              <span>味噌煮込みうどん</span>
+            </a>
+          </div>
+          <!-- 手羽先 -->
+          <div class="col-6 col-md-4 col-lg-3">
+            <a th:href="@{/houses(categoryId=4)}" class="category-card">
+              <img src="/images/yakitori01.jpg" alt="手羽先">
+              <span>手羽先</span>
+            </a>
+          </div>
+          <!-- きしめん -->
+          <div class="col-6 col-md-4 col-lg-3">
+            <a th:href="@{/houses(categoryId=5)}" class="category-card">
+              <img src="/images/ramen02.jpg" alt="きしめん">
+              <span>きしめん</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 特集バナー（任意の画像を活用） ===== -->
+    <section class="py-5">
+      <div class="container">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="feature-banner" style="background-image:url('/images/yakiniku03.jpg')">
+              <div class="feature-mask">
+                <div>
+                  <h3 class="mb-2 text-white">今夜はがっつり</h3>
+                  <a th:href="@{/houses(keyword='焼肉')}" class="btn btn-sm samuraitravel-btn text-white">焼肉を探す</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="feature-banner" style="background-image:url('/images/oden.jpg')">
+              <div class="feature-mask">
+                <div>
+                  <h3 class="mb-2 text-white">あったか出汁でほっと一息</h3>
+                  <a th:href="@{/houses(keyword='おでん')}" class="btn btn-sm samuraitravel-btn text-white">おでんを探す</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-4">
+          <a class="btn samuraitravel-btn text-white" th:href="@{/houses}">店舗一覧へ</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- フッター -->
+  <div th:replace="~{fragment :: footer}"></div>
+</div>
+<div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>
