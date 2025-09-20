@@ -1,0 +1,24 @@
+﻿# Build
+/target/
+
+# IDE
+/.idea/
+/.project
+/.classpath
+/.settings/
+/.metadata/
+/Servers/
+/.vscode/
+
+# Logs & storage
+/storage/
+/log/
+/Logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets (ローカルのみ)
+src/main/resources/application.properties

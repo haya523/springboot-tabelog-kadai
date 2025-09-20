@@ -1,0 +1,60 @@
+package com.example.samuraitravel.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class WebSecurityConfig {
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            // Stripe Webhook は CSRF 対象外
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/stripe/**"))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/", "/houses/**",
+                    "/login", "/signup", "/signup/verify",
+                    // 静的リソース
+                    "/css/**", "/js/**", "/images/**", "/webjars/**", "/storage/**",
+                    // エラー等
+                    "/error", "/favicon.ico",
+                    // ★ Webhook は外部（Stripe）から叩かれるため無認可で許可
+                    "/stripe/**"
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
+            .formLogin(login -> login
+                .loginPage("/login")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/", true)
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .permitAll()
+            )
+            .headers(Customizer.withDefaults());
+
+        return http.build();
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+}

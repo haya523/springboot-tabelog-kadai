@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <div th:replace="~{fragment :: meta}"></div>
+  <div th:replace="~{fragment :: styles}"></div>
+  <title>NAGOYAMESHI | 有料プラン登録</title>
+</head>
+<body>
+<div class="samuraitravel-wrapper">
+  <div th:replace="~{fragment :: header}"></div>
+
+  <main class="container py-4 samuraitravel-container">
+    <h1 class="mb-3">有料プラン登録</h1>
+    <p class="text-muted">月額300円でプレミアム機能をご利用いただけます。</p>
+
+    <!-- 決済導線：支払いリンク（application.properties 経由で注入） -->
+    <div class="mt-3">
+      <a th:if="${paymentLinkUrl != null}"
+         th:href="${paymentLinkUrl}"
+         class="samuraitravel-btn"
+         target="_blank" rel="noopener noreferrer">
+        有料会員になる（¥300/月）
+      </a>
+
+      <div th:if="${paymentLinkUrl == null}" class="text-danger">
+        管理者設定が未完了です（stripe.paymentLinkUrl が未設定）。
+      </div>
+    </div>
+  </main>
+
+  <div th:replace="~{fragment :: footer}"></div>
+</div>
+<div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>

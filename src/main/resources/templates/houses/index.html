@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+  <!-- ★ フラグメントの head を使用（Bootstrap + style.css を確実に読込） -->
+  <head th:replace="~{fragment :: head('NAGOYAMESHI | 店舗一覧')}"></head>
+
+  <body>
+    <header th:replace="~{fragment :: header}"></header>
+
+    <main class="samuraitravel-container container py-3">
+      <!-- パンくず -->
+      <nav class="mb-3" aria-label="breadcrumb">
+        <span>ホーム</span> <span>›</span> <strong>店舗一覧</strong>
+      </nav>
+
+      <!-- 検索ヘッダ（キーワード + 並び替え） -->
+      <form th:action="@{/houses}" method="get" class="list-toolbar mb-3">
+        <div class="list-toolbar-left">
+          <input
+            class="keyword-input"
+            type="text"
+            name="keyword"
+            placeholder="店舗名・エリア・カテゴリ"
+            th:value="${keyword}"
+          />
+          <button class="search-btn" type="submit">検索</button>
+        </div>
+        <div class="list-toolbar-right">
+          <label class="me-1">並び替え:</label>
+          <select name="sort" class="samuraitravel-sort-box" onchange="this.form.submit()">
+            <option value="" th:selected="${sort == null or sort == ''}">新着順</option>
+            <option value="price" th:selected="${sort == 'price'}">価格が安い順</option>
+          </select>
+          <input type="hidden" name="area" th:value="${area}" />
+          <input type="hidden" name="price" th:value="${price}" />
+          <input type="hidden" name="categoryId" th:value="${categoryId}" />
+        </div>
+      </form>
+
+      <div class="list-layout">
+        <!-- 左サイド：条件絞り込み -->
+        <aside class="list-sidebar">
+          <!-- カテゴリから探す -->
+          <section class="filter-card">
+            <h2>カテゴリから探す</h2>
+            <form th:action="@{/houses}" method="get" class="stack gap-8">
+              <input type="text" name="keyword" th:value="${keyword}" hidden />
+              <input type="text" name="area" th:value="${area}" hidden />
+              <input type="number" name="price" th:value="${price}" hidden />
+
+              <!-- Map を entrySet() で回す -->
+              <select name="categoryId">
+                <option value="" th:selected="${categoryId == null}">すべて</option>
+                <option
+                  th:each="entry : ${categories.entrySet()}"
+                  th:value="${entry.key}"
+                  th:text="${entry.value}"
+                  th:selected="${categoryId != null and entry.key == categoryId}">
+                </option>
+              </select>
+              <button class="search-btn" type="submit">検索</button>
+            </form>
+          </section>
+
+          <!-- 予算から探す -->
+          <section class="filter-card">
+            <h2>予算から探す</h2>
+            <form th:action="@{/houses}" method="get" class="stack gap-8">
+              <input type="text" name="keyword" th:value="${keyword}" hidden />
+              <input type="text" name="area" th:value="${area}" hidden />
+              <input type="hidden" name="categoryId" th:value="${categoryId}" />
+              <select name="price">
+                <option value="" th:selected="${price == null}">選択してください</option>
+                <option th:value="3000" th:selected="${price == 3000}">〜 3,000円</option>
+                <option th:value="5000" th:selected="${price == 5000}">〜 5,000円</option>
+                <option th:value="8000" th:selected="${price == 8000}">〜 8,000円</option>
+                <option th:value="10000" th:selected="${price == 10000}">〜 10,000円</option>
+              </select>
+              <button class="search-btn" type="submit">検索</button>
+            </form>
+          </section>
+
+          <!-- エリア -->
+          <section class="filter-card">
+            <h2>エリアで探す</h2>
+            <form th:action="@{/houses}" method="get" class="stack gap-8">
+              <input type="text" name="keyword" th:value="${keyword}" hidden />
+              <input type="number" name="price" th:value="${price}" hidden />
+              <input type="hidden" name="categoryId" th:value="${categoryId}" />
+              <input type="text" name="area" placeholder="市区町村・駅など" th:value="${area}" />
+              <button class="search-btn" type="submit">検索</button>
+            </form>
+          </section>
+        </aside>
+
+        <!-- 右側：結果リスト -->
+        <section class="list-results">
+          <p class="result-count" th:if="${housePage != null}">
+            <strong th:text="${housePage.totalElements}">0</strong> 件の店舗がみつかりました
+          </p>
+
+          <div class="result-list" th:if="${housePage != null and housePage.totalElements > 0}">
+            <article
+              class="result-card"
+              th:each="house : ${housePage.content}"
+              th:with="
+                imgName=${house.imageName},
+                seeded=${imgName != null and (
+                  imgName=='yakiniku.jpg' or imgName=='yakiniku02.jpg' or imgName=='yakiniku03.jpg' or
+                  imgName=='yakitori01.jpg' or imgName=='yakitori02.jpg' or
+                  imgName=='ramen.jpg' or imgName=='ramen02.jpg' or
+                  imgName=='udon.jpg' or imgName=='sakana.jpg' or
+                  imgName=='washoku.jpg' or imgName=='fried.jpg' or imgName=='don.jpg' or
+                  imgName=='nagoyaburger.jpg' or imgName=='noImage.png'
+                )}">
+              <a class="thumb samuraitravel-card-link" th:href="@{/houses/{id}(id=${house.id})}">
+                <img
+                  class="samuraitravel-horizontal-card-image"
+                  alt="店舗画像"
+                  th:src="${seeded} ? @{/images/{f}(f=${imgName})} : @{/images/noImage.png}"
+                  th:attr="onerror=|this.onerror=null;this.src='@{/images/noImage.png}'|"
+                />
+              </a>
+
+              <div class="result-body">
+                <div class="result-head">
+                  <h3 class="result-title">
+                    <a th:href="@{/houses/{id}(id=${house.id})}" th:text="${house.name}">店舗名</a>
+                  </h3>
+                  <div class="result-price">
+                    <span th:text="${#numbers.formatInteger(house.price, 3, 'COMMA')}">0</span>円〜
+                  </div>
+                </div>
+                <div class="result-meta">
+                  <span class="addr" th:text="${house.address}">住所</span>
+                  <span class="cat" th:if="${house.categoryId != null}">
+                    ｜<span th:text="${categories[house.categoryId]}">カテゴリ</span>
+                  </span>
+                </div>
+                <div class="result-actions">
+                  <a class="detail-link" th:href="@{/houses/{id}(id=${house.id})}">詳細を見る</a>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- ページネーション -->
+          <nav class="pager" th:if="${housePage != null and housePage.totalPages > 1}">
+            <a
+              class="pager-prev"
+              th:if="${housePage.hasPrevious()}"
+              th:href="@{/houses(page=${housePage.number - 1}, size=${housePage.size},
+                                 keyword=${keyword}, area=${area}, price=${price},
+                                 categoryId=${categoryId}, sort=${sort})}">
+              前へ
+            </a>
+
+            <ul class="pager-list">
+              <li th:each="p : ${#numbers.sequence(0, housePage.totalPages - 1)}">
+                <a
+                  th:if="${p != housePage.number}"
+                  th:href="@{/houses(page=${p}, size=${housePage.size},
+                                     keyword=${keyword}, area=${area}, price=${price},
+                                     categoryId=${categoryId}, sort=${sort})}"
+                  th:text="${p + 1}">1</a>
+                <span class="is-current" th:if="${p == housePage.number}" th:text="${p + 1}">1</span>
+              </li>
+            </ul>
+
+            <a
+              class="pager-next"
+              th:if="${housePage.hasNext()}"
+              th:href="@{/houses(page=${housePage.number + 1}, size=${housePage.size},
+                                 keyword=${keyword}, area=${area}, price=${price},
+                                 categoryId=${categoryId}, sort=${sort})}">
+              次へ
+            </a>
+          </nav>
+        </section>
+      </div>
+    </main>
+
+    <footer th:replace="~{fragment :: footer}"></footer>
+  </body>
+</html>
