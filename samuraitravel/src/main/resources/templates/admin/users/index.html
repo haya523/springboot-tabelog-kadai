@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+  <div th:replace="~{fragment :: meta}"></div>
+  <div th:replace="~{fragment :: styles}"></div>
+  <title>会員管理</title>
+</head>
+<body>
+<div class="samuraitravel-wrapper">
+  <div th:replace="~{fragment :: header}"></div>
+
+  <main class="container pt-4 pb-5 samuraitravel-container">
+    <h1 class="mb-3">会員管理</h1>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>名前</th>
+          <th>Email</th>
+          <th>有料会員</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="user : ${userList}">
+          <td th:text="${user.id}"></td>
+          <td th:text="${user.name}"></td>
+          <td th:text="${user.email}"></td>
+          <td>
+            <span th:text="${user.paidMember} ? 'はい' : 'いいえ'"></span>
+          </td>
+          <td>
+            <a th:href="@{/admin/users/show/{id}(id=${user.id})}" class="btn btn-sm btn-outline-secondary">詳細</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <div th:replace="~{fragment :: footer}"></div>
+</div>
+<div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>

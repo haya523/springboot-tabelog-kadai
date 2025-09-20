@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${house != null ? house.name : '店舗詳細'}">店舗詳細</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragment :: header}"></header>
+
+<main class="container" th:if="${house != null}">
+    <h1 th:text="${house.name}">店舗名</h1>
+
+    <img class="detail-image" alt="店舗画像"
+         th:src="${house.imageName != null and !#strings.isEmpty(house.imageName)} ?
+                  @{/images/{img}(img=${house.imageName})} :
+                  @{/images/dummy.jpg}">
+
+    <p><strong>住所：</strong><span th:text="${house.address}"></span></p>
+    <p><strong>料金：</strong>
+        <span th:text="${#numbers.formatInteger(house.price, 3, 'COMMA')}"></span>円 〜
+    </p>
+    <p><strong>定員：</strong><span th:text="${house.capacity}"></span>名</p>
+    <p><strong>説明：</strong></p>
+    <p th:utext="${#strings.replace(house.description, '\n', '<br/>')}"></p>
+
+    <p><a th:href="@{/houses}">一覧に戻る</a></p>
+</main>
+
+<footer th:replace="~{fragment :: footer}"></footer>
+</body>
+</html>

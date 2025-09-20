@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+  <div th:replace="~{fragment :: meta}"></div>
+  <div th:replace="~{fragment :: styles}"></div>
+  <title>店舗管理</title>
+</head>
+<body>
+<div class="samuraitravel-wrapper">
+  <div th:replace="~{fragment :: header}"></div>
+
+  <main class="container pt-4 pb-5 samuraitravel-container">
+    <h1 class="mb-3">店舗管理</h1>
+    <a th:href="@{/admin/houses/new}" class="btn samuraitravel-btn text-white mb-3">新規登録</a>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>店舗名</th>
+          <th>価格</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="house : ${houseList}">
+          <td th:text="${house.id}"></td>
+          <td th:text="${house.name}"></td>
+          <td th:text="${house.price}"></td>
+          <td>
+            <a th:href="@{/admin/houses/edit/{id}(id=${house.id})}" class="btn btn-sm btn-outline-secondary">編集</a>
+            <form th:action="@{/admin/houses/delete/{id}(id=${house.id})}" method="post" style="display:inline">
+              <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('削除しますか？')">削除</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <div th:replace="~{fragment :: footer}"></div>
+</div>
+<div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>
